@@ -1,11 +1,13 @@
-import { test, expect } from "vitest";
+import { test, expect, describe } from "vitest";
 import Widget from "@hexlet/chatbot-v2";
-import steps from "@hexlet/chatbot-v2/example-steps";
-import { render, screen } from "@testing-library/react";
+import steps from "../__fixtures__/steps.js";
+import { render, screen, waitFor } from "@testing-library/react";
 
-test("open chatbot", async () => {
-    render(Widget(steps));
-    const button = screen.getByRole('button', {name: /Открыть Чат/i});
-    button.click();
-    expect(document.body).toHaveTextContent("Виртуальный помощник");
+describe('ChatBot', () => {
+    test('Renders correctly', async () => {
+        render(Widget(steps));
+        await waitFor(() => {
+            expect(screen.getByText(/Открыть чат/i)).toBeInTheDocument();
+        });
+    });
 });

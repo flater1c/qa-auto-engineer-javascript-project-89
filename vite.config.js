@@ -6,6 +6,18 @@ export default defineConfig({
   plugins: [react()],
   test: {
     environment: 'jsdom',
-    setupFiles: ['vitest.setup.js'],
+    css: true,
+    globals: true,
+    setupFiles: './vitest.setup.js',
+    server: {
+      deps: {
+        inline: [/@hexlet\/.*/],
+      }
+    },
+    deps: {
+      web: {
+        transformCss: true,
+      },
+    },
   },
 });
