@@ -7,83 +7,119 @@ import invalidSteps from "../__fixtures__/invalidSteps.js";
 import registerData from '../__fixtures__/registerData.js';
 import { render, screen, waitFor } from "@testing-library/react";
 import userEvent from '@testing-library/user-event'
+import RegistrationPage from "./pages/RegistrationPage.js";
+import WidgetPage from "./pages/WidgetPage.js";
 
-describe('ChatBot', () => {
-    beforeAll(() => {
+let widgetPage;
+let registrationPage;
+
+describe('Widget Positive Tests', () => {
+    beforeEach(() => {
         window.HTMLElement.prototype.scrollIntoView = vi.fn();
-    });
-    test('Renders correctly', async () => {
-        render(<App/>);
-        await waitFor(() => {
-            expect(screen.getByText(/Открыть чат/i)).toBeInTheDocument();
-        });
-    })
-    test('Windows opens and closes', async () => {
-        render(<App/>);
-        const openButton = screen.getByText(/Открыть чат/i);
-        userEvent.click(openButton);
-        await waitFor(() => {
-            expect(screen.getByText('Виртуальный помощник')).toBeInTheDocument();
-        });
-        const closeButton = screen.getByRole('button', { name: /close/i });
-        userEvent.click(closeButton);
-        await waitFor(() => {
-            expect(openButton).toBeInTheDocument();
-        });
-    });
-    test('Switching steps', async () => {
         render(Widget(steps));
-        const openButton = screen.getByText(/Открыть чат/i);
-        userEvent.click(openButton);
+        widgetPage = new WidgetPage(screen, userEvent);
+    });
+    test('Widget renders correctly', async () => {
         await waitFor(() => {
-            expect(screen.getByText('Виртуальный помощник')).toBeInTheDocument();
+            expect(widgetPage.openChatButton).toBeInTheDocument();
         });
-        const startButton = screen.getByRole('button', { name: /Начать разговор/i });
-        userEvent.click(startButton);
-        await waitFor(() => {
-            expect(screen.getByText(/Сменить профессию или трудоустроиться/i)).toBeInTheDocument();
+    });
+    test('Widget opens', async () => {
+       await widgetPage.openChat();
+       await waitFor(() => {
+           expect(screen.getByText('Виртуальный помощник')).toBeInTheDocument();
+       });
+    });
+    test('Widget closes', async () => {
+       await widgetPage.openChat();
+       await widgetPage.closeChat();
+       await waitFor(() => {
+           expect(widgetPage.openChatButton).toBeInTheDocument();
         });
-        const changeProfessionButton = screen.getByText(/Сменить профессию или трудоустроиться/i);
-        userEvent.click(changeProfessionButton);
+    });
+    test('Switching steps in widget', async () => {
+        await widgetPage.openChat();
+        await widgetPage.startChat();
+        await widgetPage.changeProfession();
+        await widgetPage.tellMore();
         await waitFor(() => {
-            expect(screen.getByText(/К концу обучения у вас будет портфолио на GitHub./i)).toBeInTheDocument();
+           expect(screen.getByText(/Литералы, Операции, Типы данных/i)).toBeInTheDocument();
+        });
+        await widgetPage.signUpForCourse();
+        await widgetPage.backToStartFromTheEnd();
+        await waitFor(() => {
+            expect(widgetPage.changeProfessionButton).toBeInTheDocument();
+        })
+        await widgetPage.changeProfession();
+        await widgetPage.somethingSimpler();
+        await waitFor(() => {
+            expect(screen.getByText(/У нас есть подготовительные курсы/i)).toBeInTheDocument();
+        });
+        await widgetPage.backToStart();
+        await waitFor(() => {
+            expect(widgetPage.changeProfessionButton).toBeInTheDocument();
+        });
+    });
+    test('Scroll Check', async () => {
+        await widgetPage.openChat();
+        await widgetPage.startChat();
+        await widgetPage.changeProfession();
+        await waitFor(() => {
             expect(window.HTMLElement.prototype.scrollIntoView).toHaveBeenCalled();
         });
     });
-    test('Signing up in main App', async () => {
-        const user = userEvent.setup();
-        render(<App/>);
-        const registerButton = screen.getByRole('button', { name: /Зарегистрироваться/i })
+});
+
+describe('Widget Negative Tests', () => {
+    beforeEach(() => {
+        window.HTMLElement.prototype.scrollIntoView = vi.fn();
+        widgetPage = new WidgetPage(screen, userEvent);
+    })
+    test('Widget rendering with empty steps', async () => {
+        render(Widget(emptySteps));
+        await widgetPage.openChat();
+        expect(screen.queryByRole('button', { name: /Начать разговор/i })).not.toBeInTheDocument();
+    });
+    test('Invalid steps loaded to widget', async () => {
         await waitFor(() => {
-           expect(registerButton).toBeInTheDocument();
+            expect(() => {
+                render(Widget(invalidSteps));
+            }).toThrow(/e is not iterable/i);
         });
-        await user.type(screen.getByLabelText("Email"), registerData().email);
-        await user.type(screen.getByLabelText("Пароль"), registerData().password);
-        await user.type(screen.getByLabelText("Адрес"), registerData().address);
-        await user.type(screen.getByLabelText("Город"), registerData().city);
-        await userEvent.selectOptions(screen.getByRole('combobox'), registerData().country);
-        await userEvent.click(screen.getByRole('checkbox'));
-        await userEvent.click(registerButton);
+    });
+});
+
+describe('Integration Tests', () => {
+    beforeEach(() => {
+        window.HTMLElement.prototype.scrollIntoView = vi.fn();
+        render(<App/>)
+        registrationPage = new RegistrationPage(screen, userEvent);
+        widgetPage = new WidgetPage(screen, userEvent);
+    });
+    test('Widget renders correctly within main app', async () => {
+        await waitFor(() => {
+            expect(widgetPage.openChatButton).toBeInTheDocument();
+        });
+    });
+    test('Widget opens and closes correctly within main app', async () => {
+        await widgetPage.openChat();
+        await waitFor(() => {
+            expect(screen.getByText('Виртуальный помощник')).toBeInTheDocument();
+        });
+        await widgetPage.closeChat();
+        await waitFor(() => {
+            expect(widgetPage.openChatButton).toBeInTheDocument();
+        });
+    });
+    test('Signing up in main App', async () => {
+        const userData = registerData();
+        await registrationPage.registration(userData);
         await waitFor(async () => {
             expect(await screen.findByText(registerData().email)).toBeInTheDocument();
             expect(screen.getByText(registerData().address)).toBeInTheDocument();
             expect(screen.getByText(registerData().city)).toBeInTheDocument();
             expect(screen.getByText(registerData().country)).toBeInTheDocument();
             expect(screen.getByText(registerData().acceptRules)).toBeInTheDocument();
-        });
-    });
-    test('Chatbot rendering with empty steps', async () => {
-        render(Widget(emptySteps));
-        await waitFor(() => {
-            expect(screen.getByText(/Открыть чат/i)).toBeInTheDocument();
-        });
-        expect(screen.queryByRole('button', { name: /Начать разговор/i })).not.toBeInTheDocument();
-    });
-    test('Chatbot rendering with invalid steps', async () => {
-        await waitFor(() => {
-            expect(() => {
-                render(Widget(invalidSteps));
-            }).toThrow(/e is not iterable/i);
         });
     });
 });
