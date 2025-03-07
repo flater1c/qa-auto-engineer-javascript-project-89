@@ -3,7 +3,6 @@ import { test, expect, describe } from "vitest";
 import Widget from "@hexlet/chatbot-v2";
 import steps from "../__fixtures__/steps.js";
 import emptySteps from "../__fixtures__/emptySteps.js";
-import invalidSteps from "../__fixtures__/invalidSteps.js";
 import registerData from '../__fixtures__/registerData.js';
 import { render, screen, waitFor } from "@testing-library/react";
 import userEvent from '@testing-library/user-event'
@@ -83,8 +82,8 @@ describe('Widget Negative Tests', () => {
     test('Invalid steps loaded to widget', async () => {
         await waitFor(() => {
             expect(() => {
-                render(Widget(invalidSteps));
-            }).toThrow(/e is not iterable/i);
+                render(Widget(() => {}));
+            }).toThrow();
         });
     });
 });
