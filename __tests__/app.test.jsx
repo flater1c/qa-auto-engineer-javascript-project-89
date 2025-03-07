@@ -1,5 +1,6 @@
 import App from '../src/App';
 import { test, expect, describe } from "vitest";
+import '@testing-library/jest-dom';
 import Widget from "@hexlet/chatbot-v2";
 import steps from "../__fixtures__/steps.js";
 import emptySteps from "../__fixtures__/emptySteps.js";
