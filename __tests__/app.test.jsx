@@ -115,11 +115,11 @@ describe('Integration Tests', () => {
         const userData = registerData();
         await registrationPage.registration(userData);
         await waitFor(async () => {
-            expect(await screen.findByText(registerData().email)).toBeInTheDocument();
-            expect(screen.getByText(registerData().address)).toBeInTheDocument();
-            expect(screen.getByText(registerData().city)).toBeInTheDocument();
-            expect(screen.getByText(registerData().country)).toBeInTheDocument();
-            expect(screen.getByText(registerData().acceptRules)).toBeInTheDocument();
+            expect(await screen.findByText(userData.email)).toBeInTheDocument();
+            expect(screen.getByText(userData.address)).toBeInTheDocument();
+            expect(screen.getByText(userData.city)).toBeInTheDocument();
+            expect(screen.getByText(userData.country)).toBeInTheDocument();
+            expect(screen.getByText(userData.acceptRules)).toBeInTheDocument();
         });
     });
 });
