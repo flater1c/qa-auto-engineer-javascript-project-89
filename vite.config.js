@@ -21,4 +21,3 @@ export default defineConfig({
     },
   },
 });
-console.log('✅ vite.config.js загружен!');
