@@ -1,5 +1,3 @@
-import { waitFor } from '@testing-library/react';
-
 export default class WidgetPage {
   constructor(screen, userEvent) {
     this.screen = screen;
@@ -43,56 +41,38 @@ export default class WidgetPage {
   }
 
   async openChat() {
-    await waitFor(async () => {
-      await this.userEvent.click(this.openChatButton);
-    });
+    await this.userEvent.click(this.openChatButton);
   }
 
   async closeChat() {
-    await waitFor(async () => {
-      await this.userEvent.click(this.closeChatButton);
-    });
+    await this.userEvent.click(this.closeChatButton);
   }
 
   async startChat() {
-    await waitFor(async () => {
-      await this.userEvent.click(this.startChatButton);
-    });
+    await this.userEvent.click(this.startChatButton);
   }
 
   async changeProfession() {
-    await waitFor(async () => {
-      await this.userEvent.click(this.changeProfessionButton);
-    });
+    await this.userEvent.click(this.changeProfessionButton);
   }
 
   async tellMore() {
-    await waitFor(async () => {
-      await this.userEvent.click(this.tellMoreButton);
-    });
+    await this.userEvent.click(this.tellMoreButton);
   }
 
   async somethingSimpler() {
-    await waitFor(async () => {
-      await this.userEvent.click(this.somethingSimplerButton);
-    });
+    await this.userEvent.click(this.somethingSimplerButton);
   }
 
   async signUpForCourse() {
-    await waitFor(async () => {
-      await this.userEvent.click(this.signUpForCourseButton);
-    });
+    await this.userEvent.click(this.signUpForCourseButton);
   }
 
   async backToStart() {
-    await waitFor(async () => {
-      await this.userEvent.click(this.backToStartButton);
-    });
+    await this.userEvent.click(this.backToStartButton);
   }
 
   async backToStartFromTheEnd() {
-    await waitFor(async () => {
-      await this.userEvent.click(this.backToStartFromTheEndButton);
-    });
+    await this.userEvent.click(this.backToStartFromTheEndButton);
   }
 }
