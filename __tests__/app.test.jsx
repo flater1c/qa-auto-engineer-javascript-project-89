@@ -78,7 +78,7 @@ describe('Widget Negative Tests', () => {
     test('Widget rendering with empty steps', async () => {
         render(Widget(emptySteps));
         await widgetPage.openChat();
-        expect(screen.queryByRole('button', { name: /Начать разговор/i })).toBeNull();
+        expect(widgetPage.startChatButton).toBeNull();
     });
     test('Invalid steps loaded to widget', async () => {
         await waitFor(() => {

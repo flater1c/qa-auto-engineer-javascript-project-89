@@ -15,7 +15,7 @@ export default class WidgetPage {
   }
 
   get startChatButton() {
-    return this.screen.getByRole('button', { name: /Начать разговор/i });
+    return this.screen.queryByRole('button', { name: /Начать разговор/i });
   }
 
   get changeProfessionButton() {
